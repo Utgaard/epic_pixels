@@ -211,6 +211,215 @@ Examples:
 
 ---
 
+The exact layout is flexible; the key point is separating:
+- **simulation** (units, targeting, spawns)
+- **combat** (damage, projectiles)
+- **presentation** (FX, decals, camera)
+
+---
+
+### Scene Graph Overview
+
+**Battlefield.tscn**
+- `BattleController` (Node)
+- `Units` (Node2D)
+  - `TeamAUnits` (Node2D)
+  - `TeamBUnits` (Node2D)
+- `Projectiles` (Node2D)
+- `FX` (Node2D)
+- `Decals` (Node2D)
+- `Terrain` (TileMapLayer / Node2D)
+- `Background` (ParallaxBackground)
+- `CameraRig` (Node2D + Camera2D)
+
+Rationale:
+- Keeps draw order deterministic (terrain → units → FX → decals optional)
+- Easy culling or caps per layer
+- Allows pooling per layer
+
+---
+
+### Core Runtime Systems
+
+#### 1) BattleController (Simulation Orchestrator)
+Responsible for:
+- Starting/ending battles
+- Managing spawn waves
+- Updating “macro” simulation at a fixed tick rate (e.g. 10–30 Hz)
+- Delegating heavy work to managers
+
+Key concept:
+- **Do not** run expensive logic every frame for every unit.
+- Use periodic updates and staggered evaluations.
+
+#### 2) UnitBase + Subclasses
+All units derive from `UnitBase`:
+- Team ID, HP, state machine
+- Movement interface
+- Target pointer
+- Weapon(s)
+- Hitbox/hurtbox setup
+- Death handling (animation + fade)
+
+**Infantry / Tank / AirUnit**:
+- Implement movement + special behaviors
+- Infantry and tanks should use deterministic motion (e.g., `CharacterBody2D`)
+- Air units can ignore ground collisions and use altitude bands
+
+#### 3) Targeting System (Cheap + Periodic)
+- Units evaluate targets on an interval (e.g., every 0.25–1.0s)
+- Use distance checks and simple lane/band constraints
+- Optional: coarse spatial partitioning later (grid buckets)
+
+Target evaluation is intentionally simple:
+- nearest valid enemy in lane
+- prefer targets that are closer / higher threat
+- avoid per-frame line-of-sight unless required
+
+#### 4) Weapons & Combat
+Two weapon types:
+- **Hitscan** for bullets (cheap, readable)
+- **Projectile** for rockets/grenades/artillery (slower, cinematic)
+
+Each weapon defines:
+- fire rate
+- range
+- damage model
+- spread/recoil parameters (presentation + slight gameplay)
+
+Damage pipeline:
+`Weapon.fire()` → emits `DamageEvent` → target `Health.apply_damage()`
+
+Avoid deeply coupled calls. Prefer signals or a lightweight event dispatch.
+
+---
+
+### Physics Policy (Determinism First)
+
+- **Units**: `CharacterBody2D` (stable) with handcrafted acceleration/drag
+- **Debris**: `RigidBody2D` (short-lived) for “weight candy”
+- Keep debris collision layers isolated to avoid interaction explosions.
+
+“Weight” techniques:
+- acceleration curves (units take time to start/stop)
+- recoil impulses (temporary velocity addition)
+- knockback on hit (short, capped)
+- dust FX on footsteps / treads
+
+---
+
+### Object Pooling (Mandatory for FX + Bullets)
+
+Pooling targets:
+- bullets/hitscan tracers
+- muzzle flashes
+- hit sparks
+- smoke puffs
+- small explosions
+- decals
+
+Approach:
+- A generic `Pool.gd` that pre-warms N instances per type
+- Acquire → configure → show
+- Return on completion (`animation_finished`, `timeout`, etc.)
+
+Hard caps to prevent runaway:
+- max active FX by category
+- max decals per screen
+- max debris bodies
+
+When caps are reached:
+- drop lowest priority FX first (e.g., extra dust puffs)
+
+---
+
+### FX & Decals Architecture
+
+#### FxManager
+- Single point for spawning FX
+- Applies LOD/caps
+- Chooses correct layer node (FX, Decals)
+- Supports “FX recipes” per event type:
+  - bullet impact: spark + blood mist + tiny smoke
+  - explosion: flash + blast sprite + smoke + debris + decal + screen shake
+
+#### DecalManager
+- Spawns scorch / crater / blood stains as sprites on ground layer
+- Fades alpha over time
+- Enforces a cap (FIFO removal)
+
+---
+
+### Camera Rig
+
+**ScreenShake**
+- Trauma-based shake (event-driven)
+- Explosion size maps to trauma amount
+- Decays smoothly
+- Optional minor zoom punch on large explosions
+
+**Camera2D**
+- Slight smoothing
+- Deadzone to prevent micro jitter
+- Locked vertical framing unless special units demand otherwise
+
+---
+
+### Timing Model
+
+- Render update: variable (frame rate)
+- Simulation tick: fixed (e.g., 20 Hz)
+- Targeting tick: staggered per unit group (e.g., infantry offsets)
+
+This keeps:
+- movement smooth
+- CPU stable with many units
+- deterministic behavior across machines
+
+---
+
+### Collision Layers (Suggested)
+
+Define layers early (and keep them stable):
+- Units_A
+- Units_B
+- Projectiles_A
+- Projectiles_B
+- Terrain
+- Debris
+- Sensors (target detection, triggers)
+
+Avoid “everything collides with everything.”
+
+---
+
+### Data-Driven Unit Definitions
+
+Use `Resource` assets for units/weapons:
+- `UnitDef.tres`
+  - HP, speed, mass, lane
+  - sprite frames
+  - weapon references
+- `WeaponDef.tres`
+  - fire rate, damage, range
+  - hitscan/projectile type
+  - FX recipe IDs
+
+This enables rapid iteration without code changes.
+
+---
+
+### Debug & Tooling (Planned)
+
+- Spawn controls (spawn 10/50/100 units per side)
+- Toggle FX caps and LOD
+- Display unit counts per layer
+- Show simulation tick rate + frame time
+- “Freeze sim” and “step one tick” for debugging
+
+---
+
+
 ## Non-Goals (For Now)
 
 - No direct player control of individual units
@@ -232,3 +441,4 @@ Examples:
 The goal is to **feel** the battle before expanding systems.
 
 ---
+
