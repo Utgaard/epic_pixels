@@ -1,0 +1,22 @@
+[gd_resource type="SpriteFrames" load_steps=4 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/Hit/Sprites/hit1.png" id="hit1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/Hit/Sprites/hit2.png" id="hit2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/Hit/Sprites/hit3.png" id="hit3"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("hit1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("hit2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("hit3")
+}],
+"loop": false,
+"name": &"hit_spark",
+"speed": 20.0
+}]

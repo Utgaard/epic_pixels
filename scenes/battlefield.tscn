@@ -1,0 +1,160 @@
+[gd_scene load_steps=10 format=3 uid="uid://battlefield"]
+
+[ext_resource type="Script" path="res://scripts/battlefield.gd" id="0_battlefield"]
+[ext_resource type="Script" path="res://scripts/battle_controller.gd" id="1_battle"]
+[ext_resource type="Script" path="res://scripts/camera_rig.gd" id="2_camera"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/sky.png" id="3_sky"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/far-clouds.png" id="4_far_clouds"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/far-mountains.png" id="5_far_mountains"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/near-clouds.png" id="6_near_clouds"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/mountains.png" id="7_mountains"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/trees.png" id="8_trees"]
+
+[node name="Battlefield" type="Node2D"]
+script = ExtResource("0_battlefield")
+team_a_infantry_count = 1
+team_b_infantry_count = 1
+start_delay = 0.5
+
+[node name="Background" type="ParallaxBackground" parent="."]
+
+[node name="SkyLayer" type="ParallaxLayer" parent="Background"]
+motion_scale = Vector2(0, 0)
+motion_mirroring = Vector2(320, 0)
+
+[node name="Sky" type="Sprite2D" parent="Background/SkyLayer"]
+position = Vector2(160, 180)
+texture = ExtResource("3_sky")
+
+[node name="Sky2" type="Sprite2D" parent="Background/SkyLayer"]
+position = Vector2(480, 180)
+texture = ExtResource("3_sky")
+
+[node name="FarCloudsLayer" type="ParallaxLayer" parent="Background"]
+motion_scale = Vector2(0.1, 0)
+motion_mirroring = Vector2(640, 0)
+
+[node name="FarClouds" type="Sprite2D" parent="Background/FarCloudsLayer"]
+position = Vector2(64, 160)
+texture = ExtResource("4_far_clouds")
+
+[node name="FarClouds2" type="Sprite2D" parent="Background/FarCloudsLayer"]
+position = Vector2(192, 160)
+texture = ExtResource("4_far_clouds")
+
+[node name="FarClouds3" type="Sprite2D" parent="Background/FarCloudsLayer"]
+position = Vector2(320, 160)
+texture = ExtResource("4_far_clouds")
+
+[node name="FarClouds4" type="Sprite2D" parent="Background/FarCloudsLayer"]
+position = Vector2(448, 160)
+texture = ExtResource("4_far_clouds")
+
+[node name="FarClouds5" type="Sprite2D" parent="Background/FarCloudsLayer"]
+position = Vector2(576, 160)
+texture = ExtResource("4_far_clouds")
+
+[node name="FarMountainsLayer" type="ParallaxLayer" parent="Background"]
+motion_scale = Vector2(0.2, 0)
+motion_mirroring = Vector2(640, 0)
+
+[node name="FarMountains" type="Sprite2D" parent="Background/FarMountainsLayer"]
+position = Vector2(80, 200)
+texture = ExtResource("5_far_mountains")
+
+[node name="FarMountains2" type="Sprite2D" parent="Background/FarMountainsLayer"]
+position = Vector2(240, 200)
+texture = ExtResource("5_far_mountains")
+
+[node name="FarMountains3" type="Sprite2D" parent="Background/FarMountainsLayer"]
+position = Vector2(400, 200)
+texture = ExtResource("5_far_mountains")
+
+[node name="FarMountains4" type="Sprite2D" parent="Background/FarMountainsLayer"]
+position = Vector2(560, 200)
+texture = ExtResource("5_far_mountains")
+
+[node name="NearCloudsLayer" type="ParallaxLayer" parent="Background"]
+motion_scale = Vector2(0.3, 0)
+motion_mirroring = Vector2(576, 0)
+
+[node name="NearClouds" type="Sprite2D" parent="Background/NearCloudsLayer"]
+position = Vector2(72, 170)
+texture = ExtResource("6_near_clouds")
+
+[node name="NearClouds2" type="Sprite2D" parent="Background/NearCloudsLayer"]
+position = Vector2(216, 170)
+texture = ExtResource("6_near_clouds")
+
+[node name="NearClouds3" type="Sprite2D" parent="Background/NearCloudsLayer"]
+position = Vector2(360, 170)
+texture = ExtResource("6_near_clouds")
+
+[node name="NearClouds4" type="Sprite2D" parent="Background/NearCloudsLayer"]
+position = Vector2(504, 170)
+texture = ExtResource("6_near_clouds")
+
+[node name="MountainsLayer" type="ParallaxLayer" parent="Background"]
+motion_scale = Vector2(0.5, 0)
+motion_mirroring = Vector2(640, 0)
+
+[node name="Mountains" type="Sprite2D" parent="Background/MountainsLayer"]
+position = Vector2(160, 200)
+texture = ExtResource("7_mountains")
+
+[node name="Mountains2" type="Sprite2D" parent="Background/MountainsLayer"]
+position = Vector2(480, 200)
+texture = ExtResource("7_mountains")
+
+[node name="TreesLayer" type="ParallaxLayer" parent="Background"]
+motion_scale = Vector2(0.8, 0)
+motion_mirroring = Vector2(720, 0)
+
+[node name="Trees" type="Sprite2D" parent="Background/TreesLayer"]
+position = Vector2(120, 240)
+texture = ExtResource("8_trees")
+
+[node name="Trees2" type="Sprite2D" parent="Background/TreesLayer"]
+position = Vector2(360, 240)
+texture = ExtResource("8_trees")
+
+[node name="Trees3" type="Sprite2D" parent="Background/TreesLayer"]
+position = Vector2(600, 240)
+texture = ExtResource("8_trees")
+
+[node name="Terrain" type="Node2D" parent="."]
+
+[node name="Ground" type="ColorRect" parent="Terrain"]
+offset_left = 0.0
+offset_top = 300.0
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0.12, 0.1, 0.15, 1)
+
+[node name="SimRoot" type="Node2D" parent="."]
+
+[node name="Units" type="Node2D" parent="SimRoot"]
+
+[node name="Projectiles" type="Node2D" parent="SimRoot"]
+
+[node name="RenderRoot" type="Node2D" parent="."]
+
+[node name="Sprites" type="Node2D" parent="RenderRoot"]
+
+[node name="FX" type="Node2D" parent="RenderRoot"]
+
+[node name="Decals" type="Node2D" parent="RenderRoot"]
+
+[node name="CameraRig" type="Node2D" parent="."]
+script = ExtResource("2_camera")
+max_shake_offset = 8.0
+trauma_decay_rate = 2.0
+
+[node name="Camera2D" type="Camera2D" parent="CameraRig"]
+offset = Vector2(320, 180)
+position_smoothing_enabled = false
+
+[node name="BattleController" type="Node" parent="."]
+script = ExtResource("1_battle")
+units_node_path = NodePath("../SimRoot/Units")
+projectiles_node_path = NodePath("../SimRoot/Projectiles")

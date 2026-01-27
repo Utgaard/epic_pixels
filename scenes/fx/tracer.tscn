@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://tracer"]
+
+[ext_resource type="Script" path="res://scripts/fx/fx_tracer.gd" id="1_script"]
+
+[node name="Tracer" type="Line2D"]
+script = ExtResource("1_script")
+lifetime = 0.12
+fade_time = 0.08

@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://unit_base"]
+
+[ext_resource type="Script" path="res://scripts/unit_base.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_placeholder"]
+size = Vector2(16, 24)
+
+[node name="UnitBase" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_script")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -12)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -12)
+shape = SubResource("RectangleShape2D_placeholder")

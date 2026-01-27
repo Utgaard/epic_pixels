@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" load_steps=6 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/spark/Sprites/spark-preview1.png" id="spark1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/spark/Sprites/spark-preview2.png" id="spark2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/spark/Sprites/spark-preview3.png" id="spark3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/spark/Sprites/spark-preview4.png" id="spark4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/spark/Sprites/spark-preview5.png" id="spark5"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("spark1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("spark2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("spark3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("spark4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("spark5")
+}],
+"loop": false,
+"name": &"muzzle_flash",
+"speed": 30.0
+}]
