@@ -4,135 +4,213 @@
 Epic Pixels 2D
 
 ## Genre
-2D Side-Scrolling Army Battle Simulator  
-Pixel art · Real-time · Large-scale combat
+2D Side-Scrolling Army Battle Simulator
+Pixel Art · Real-Time · Large-Scale Combat
 
 ## Target Platform
 - **Windows PC**
 - Native resolution: **2560×1440 (1440p)**
-- Internal pixel resolution with upscale
+- Internal pixel resolution with integer upscale
 
 ---
 
 ## High-Level Vision
 
-The game is a **gritty, large-scale 2D battlefield simulator** where two opposing armies clash from opposite sides of a wide horizontal battlefield.
+Epic Pixels 2D is a **gritty, large-scale 2D battlefield simulator** where two opposing armies clash across a wide horizontal battlefield.
 
-The player does not control individual soldiers directly. Instead, the game focuses on:
+The player does **not** control individual units. Instead, the game emphasizes:
 - Scale
 - Brutality
-- Weight
+- Physical weight
 - Emergent chaos
 
-Infantry are intentionally **small relative to the screen**, emphasizing the epic scale of the battlefield and leaving visual and gameplay space for:
+Infantry are intentionally **small relative to the screen**, reinforcing the feeling of a vast battlefield and leaving room for:
 - Tanks
 - Mechs
-- Monsters
 - Heavy artillery
 - Air units
+- Future monsters and non-human factions
 
-The battlefield should feel **alive, violent, and overwhelming**, with persistent smoke, debris, and environmental damage accumulating over time.
+Battles should feel **violent, overwhelming, and alive**, with smoke, debris, and destruction accumulating over time.
 
 ---
 
 ## Core Pillars
 
 ### 1. Epic Scale
-- Infantry feel like small parts of a massive conflict
-- Screen space emphasizes terrain, large units, and FX
-- Backgrounds and parallax reinforce battlefield depth
+- Infantry are expendable and numerous
+- Screen space favors terrain, heavy units, and FX
+- Backgrounds and parallax reinforce depth and distance
 
 ### 2. Weight & Impact
-- Movement has inertia and resistance
-- Weapons feel powerful through recoil, knockback, and FX
-- Explosions displace debris and briefly dominate the screen
+- Units accelerate and decelerate with inertia
+- Weapons produce recoil, knockback, and screen shake
+- Explosions briefly dominate attention
 
 ### 3. Gritty & Brutal Presentation
 - Muted military palettes
 - High-contrast FX (fire, sparks, smoke, blood mist)
-- Lingering smoke, scorch marks, and destruction
-- Minimal “gamey” UI
+- Persistent smoke, scorch marks, and debris
+- Minimal, non-intrusive UI
 
 ### 4. Simulation Over Micromanagement
-- Units follow simple autonomous behaviors
-- Battles unfold dynamically without constant player input
-- Readability and performance over individual complexity
+- Units act autonomously
+- The player influences battles through composition, not control
+- Readability and performance take priority over complexity
+
+---
+
+## Core Game Loop
+
+### Win / Lose Condition
+- Each side has a **Command Post (CP)**.
+- The battle ends when a CP's HP reaches **0**.
+- CPs are large, static structures placed at each battlefield edge.
+- Heavy weapons and air units prioritize CPs once in range.
+
+### Player Agency
+**Primary interaction:** *pre-battle army composition only*.
+
+The player selects:
+- Infantry count
+- Heavy units (tanks, later mechs)
+- Air units (helicopters, later aircraft)
+
+Once the battle begins, the player observes the simulation unfold.
+
+No mid-battle micromanagement in v1.
+
+### Match Length
+- Target duration: **8–12 minutes** for a balanced match
+- Shorter if armies are mismatched
+- Longer if both sides are armor-heavy
 
 ---
 
 ## Visual Style
 
-### Art Style
-- **Pixel art**
-- **Modern military aesthetic**
-- Semi-realistic proportions (not chibi, not exaggerated)
-- Minimal outlines, silhouette-driven readability
+### Art Direction
+- Pixel art
+- Modern / near-future military aesthetic
+- Semi-realistic proportions
+- Silhouette-driven readability
+- Minimal outlines
 
 ### Scale
-- Infantry sprites: **32×32 source**, displayed at ~20–30 px tall on screen
+- Infantry: small on screen, numerous
 - Tanks / mechs: 2–4× infantry height
-- Monsters / bosses: significantly larger
-- Air units occupy upper vertical space
+- Air units: occupy upper third of screen
+- Future bosses/monsters: significantly larger
 
 ### Color & Contrast
-- Ground and background are low-contrast
-- Units slightly brighter/darker than terrain
-- FX use high brightness and saturation for readability
+- Terrain and background are low contrast
+- Units slightly separated from terrain
+- FX are bright and saturated for clarity
 
 ---
 
 ## Resolution & Camera
 
 ### Rendering
-- Internal resolution: **426×240** (subject to tuning)
-- Upscaled cleanly to **1440p** using nearest-neighbor filtering
-- No texture smoothing
+- Internal resolution: **640×360**
+- Upscaled **4×** to 2560×1440
+- Nearest-neighbor scaling
+- Pixel-snapped camera
 
-### Camera
-- Horizontal battlefield focus
-- Slight smoothing for cinematic feel
-- Deadzone to avoid jitter
-- Screen shake driven by explosions and heavy weapons
-- No constant camera motion; reacts to battle events
+### Readability Priority
+When the screen is saturated with effects, priority is enforced in this order:
+1. Projectiles and tracers
+2. Heavy units (tanks, mechs)
+3. Infantry
+4. Explosions
+5. Smoke and ambience
 
----
+Lower-priority FX are dropped first when caps are reached.
 
-## Battlefield Layout
+### Camera Behavior
+- Mostly static horizontal framing
+- Trauma-based screen shake
+- Occasional micro-zoom on large explosions
+- No constant panning or forced motion
 
-### Vertical Bands
-- **Ground band:** infantry, cover, tanks
-- **Mid band:** mechs, tall units, large muzzle flashes
-- **Air band:** aircraft, artillery shells, falling debris
-
-Bands may overlap visually but help organize collision and targeting.
-
-### Lanes (Logical, Not Visual)
-- Ground lane
-- Heavy/mid lane
-- Air lane
-
-This supports scale while keeping simulation stable.
+The camera exists to **observe**, not to guide.
 
 ---
 
-## Units
+## Battlefield Model
 
-### Infantry
-- Small, numerous, expendable
-- Use deterministic movement (CharacterBody2D)
-- Weight simulated via acceleration, friction, and knockback
-- Short death animations; bodies fade over time
+### Vertical Lanes (Logical)
+| Lane | Contents |
+|----|----|
+| Ground | Infantry |
+| Heavy | Tanks, mechs (same level, slightly behind infantry) |
+| Air | Helicopters, aircraft, shells, falling debris |
 
-### Heavy Units (Tanks / Mechs)
-- Slower acceleration
-- Visible recoil and screen shake
-- Larger hitboxes and presence
-- Kick up dust and debris constantly
+Lanes are logical constraints, not hard visual separations.
 
-### Air Units
-- Separate vertical space
-- Less frequent, high-impact
-- Strong audio/visual identity
+### Pathing
+- Lane-based forward advance
+- No navmesh
+- No terrain pathfinding
+- Simple obstacle nudging only
+
+Units exist to collide, fire, and die—not to navigate intelligently.
+
+---
+
+## Units (Vertical Slice)
+
+### Infantry – Rifleman
+- Numerous and fragile
+- Hitscan rifle with tracer visuals
+- Low HP
+- Short death animation
+- Bodies persist briefly, then fade
+
+### Heavy – Tank
+- Slow acceleration
+- High HP
+- Projectile cannon
+- Strong recoil and screen shake
+- Primary structure and CP killer
+
+### Air – Helicopter
+- Rare and powerful
+- Strong versus infantry
+- Vulnerable to heavy fire
+- Occupies air lane exclusively
+
+---
+
+## Combat Model
+
+### Targeting
+- Default behavior: **nearest valid enemy in same lane**
+- No morale or retreat in v1
+- No squad logic
+
+Targeting rules are data-driven and may vary per unit type later.
+
+### Weapons
+Hybrid combat model:
+- **Hitscan** for bullets
+- **Projectile-based** weapons for:
+  - Tank shells
+  - Rockets
+  - Artillery
+- Tracers are visual-only and pooled
+
+---
+
+## Violence & Tone
+
+- Gritty military violence trending toward brutal
+- Artillery against infantry causes:
+  - Multiple casualties
+  - Bodies thrown short distances
+  - Blood mist and debris
+- No gibs initially
+- Bodies and damage are readable but not cartoonish
 
 ---
 
@@ -146,6 +224,16 @@ Examples:
 - Shell casings
 - Rock chunks
 - Explosive debris
+
+---
+
+## Simulation Philosophy
+
+- Determinism is **not a goal**
+- Rule-of-cool physics are allowed
+- Stability and performance matter more than reproducibility
+
+A fixed simulation tick is still used to keep behavior sane and scalable.
 
 ---
 
@@ -188,11 +276,18 @@ Examples:
 
 ---
 
-## Performance Targets (Initial)
+## Performance Targets
 
-- Infantry per side: ~30
-- Active projectiles: ~200
-- Persistent decals: ~150
+### Per Side (Typical Battle)
+- Infantry: **20–30**
+- Heavy units: **3–6**
+- Air units: **0–2**
+
+### Global
+- Active real projectiles: ~150
+- Tracer visuals: pooled and capped per frame
+- FX sprites: capped by priority
+- Decals: FIFO capped
 - Smoke FX lifetime: 2–6 seconds (varied)
 - Stable performance at 1440p
 
@@ -203,7 +298,13 @@ Examples:
 ### Engine
 - **Godot**
 
-### Architecture Principles
+### Architectural Principles
+- Clear separation between:
+  - **Simulation**
+  - **Combat**
+  - **Presentation**
+- No presentation logic inside simulation code
+- Communication via events, not tight coupling
 - Scene-based units (`Soldier.tscn`, `Tank.tscn`, etc.)
 - Reusable SpriteFrames
 - Object pooling for bullets and FX
@@ -211,29 +312,24 @@ Examples:
 
 ---
 
-The exact layout is flexible; the key point is separating:
-- **simulation** (units, targeting, spawns)
-- **combat** (damage, projectiles)
-- **presentation** (FX, decals, camera)
-
----
-
 ### Scene Graph Overview
 
 **Battlefield.tscn**
-- `BattleController` (Node)
-- `Units` (Node2D)
-  - `TeamAUnits` (Node2D)
-  - `TeamBUnits` (Node2D)
-- `Projectiles` (Node2D)
-- `FX` (Node2D)
-- `Decals` (Node2D)
-- `Terrain` (TileMapLayer / Node2D)
-- `Background` (ParallaxBackground)
-- `CameraRig` (Node2D + Camera2D)
+- `BattleController`
+- `SimRoot`
+  - `Units`
+  - `Projectiles`
+- `RenderRoot`
+  - `Sprites`
+  - `FX`
+  - `Decals`
+- `Terrain`
+- `Background`
+- `CameraRig`
 
 Rationale:
 - Keeps draw order deterministic (terrain → units → FX → decals optional)
+- Separates simulation from presentation
 - Easy culling or caps per layer
 - Allows pooling per layer
 
@@ -252,7 +348,18 @@ Key concept:
 - **Do not** run expensive logic every frame for every unit.
 - Use periodic updates and staggered evaluations.
 
-#### 2) UnitBase + Subclasses
+#### 2) Unit Architecture
+Units are composed, not deeply inherited.
+
+Core components:
+- MovementComponent
+- TargetingComponent
+- WeaponComponent(s)
+- HealthComponent
+- TeamComponent
+
+This supports future expansion into monsters, aliens, and magical factions.
+
 All units derive from `UnitBase`:
 - Team ID, HP, state machine
 - Movement interface
@@ -420,23 +527,26 @@ This enables rapid iteration without code changes.
 ---
 
 
-## Non-Goals (For Now)
+## Non-Goals (Explicit)
 
-- No direct player control of individual units
-- No complex squad micromanagement
+- No RTS micromanagement
+- No squads
+- No morale systems (yet)
+- No networking
+- No replay system
 - No full ragdoll physics
 - No hyper-detailed UI or RPG systems
 
 ---
 
-## Next Milestone (Vertical Slice)
+## Vertical Slice Milestone
 
-1. One infantry unit
-2. One heavy unit (tank or mech)
-3. One air unit
-4. Two opposing spawn points
-5. Core FX stack (muzzle → hit → smoke → decal)
-6. Camera, parallax, and screen shake
+1. Rifleman infantry unit
+2. Tank heavy unit
+3. Helicopter air unit
+4. Two opposing Command Posts
+5. Core FX stack
+6. Camera shake and parallax
 
 The goal is to **feel** the battle before expanding systems.
 
