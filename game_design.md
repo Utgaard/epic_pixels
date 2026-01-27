@@ -552,3 +552,64 @@ The goal is to **feel** the battle before expanding systems.
 
 ---
 
+## Asset Reference
+
+### Project Asset Structure
+```
+assets/
+├── sprites/
+│   ├── infantry/          # Space Marine character
+│   │   ├── Idle Gun/      # Standing with weapon (4 frames)
+│   │   ├── Run with Gun/  # Advancing (10 frames)
+│   │   ├── Shoot/         # Firing animation (2 frames)
+│   │   ├── Die/           # Death animation (3 frames)
+│   │   ├── Misc/          # Bullets, impact effects
+│   │   └── Spritesheet.png
+│   └── fx/
+│       ├── Hit/           # Blue spark impact (3 frames)
+│       ├── hits/          # 6 hit effect variations
+│       ├── spark/         # Muzzle flash sparks (5 frames)
+│       └── Explosion/     # Explosion animation (9 frames)
+└── backgrounds/
+    └── mountain_dusk/     # Parallax layers
+        ├── sky.png
+        ├── far-clouds.png
+        ├── near-clouds.png
+        ├── far-mountains.png
+        ├── mountains.png
+        └── trees.png
+```
+
+### Infantry Animations (Milestone 1)
+
+| Animation | Path | Frames | Use |
+|-----------|------|--------|-----|
+| Idle Gun | `infantry/Idle Gun/sprites/` | 4 | Standing/shooting stance |
+| Run with Gun | `infantry/Run with Gun/sprites/` | 10 | Advancing toward enemy |
+| Shoot | `infantry/Shoot/sprites/` | 2 | Firing weapon |
+| Die | `infantry/Die/sprites/` | 3 | Death animation |
+
+### FX Assets (Milestone 1)
+
+| Effect | Path | Frames | Use |
+|--------|------|--------|-----|
+| Hit Spark | `fx/Hit/Sprites/` | 3 | Bullet impact on target |
+| Muzzle Spark | `fx/spark/Sprites/` | 5 | Weapon firing effect |
+| Bullet | `infantry/Misc/bullet1.png` | 1 | Tracer visual |
+| Impact Blast | `infantry/Misc/wall-impact-blast*.png` | 2 | Miss/wall hit |
+
+### Background Layers (Milestone 1)
+
+Ordered back-to-front for parallax:
+1. `sky.png` - Static sky with moon
+2. `far-clouds.png` - Slow parallax
+3. `far-mountains.png` - Slow parallax
+4. `near-clouds.png` - Medium parallax
+5. `mountains.png` - Medium parallax
+6. `trees.png` - Fast parallax (foreground silhouettes)
+
+### Source Library
+Original assets sourced from `X:/Gamedev/Assets/` (excluded from version control).
+
+---
+
