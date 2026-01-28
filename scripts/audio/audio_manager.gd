@@ -4,6 +4,8 @@ extends Node
 ## Central audio system for Epic Pixels 2D.
 ## Manages SFX, music, and ambience with volume controls and polyphony limits.
 
+const SfxPoolScript = preload("res://scripts/audio/sfx_pool.gd")
+
 # Bus names (must match default_bus_layout.tres)
 const BUS_MASTER := "Master"
 const BUS_SFX := "SFX"
@@ -21,8 +23,10 @@ var _bus_sfx_idx: int = 1
 var _bus_music_idx: int = 2
 var _bus_ambience_idx: int = 3
 
-# Active voice counts for polyphony limiting
-var _active_sfx_count: int = 0
+# SFX Pool for efficient sound playback
+var _sfx_pool: SfxPool = null
+
+# Active voice counts for music/ambience (SFX uses pool)
 var _active_music_count: int = 0
 var _active_ambience_count: int = 0
 
@@ -44,6 +48,11 @@ func _ready() -> void:
 		push_error("[AudioManager] Music bus not found! Check default_bus_layout.tres")
 	if _bus_ambience_idx == -1:
 		push_error("[AudioManager] Ambience bus not found! Check default_bus_layout.tres")
+
+	# Create SFX pool
+	_sfx_pool = SfxPoolScript.new(MAX_SFX_VOICES, BUS_SFX)
+	_sfx_pool.name = "SfxPool"
+	add_child(_sfx_pool)
 
 
 ## Connect to a CombatEventBus to auto-play sounds for combat events.
@@ -129,11 +138,54 @@ func _get_bus_volume(bus_idx: int) -> float:
 #endregion
 
 
+#region SFX Playback (Pooled)
+
+## Play a weapon sound at position (highest priority).
+func play_weapon_sfx(stream: AudioStream, position: Vector2,
+					 volume_db: float = 0.0, pitch_scale: float = 1.0) -> AudioStreamPlayer2D:
+	if _sfx_pool == null:
+		return null
+	return _sfx_pool.play_at(stream, position, SfxPool.Priority.WEAPON, volume_db, pitch_scale)
+
+
+## Play an impact sound at position (medium priority).
+func play_impact_sfx(stream: AudioStream, position: Vector2,
+					 volume_db: float = 0.0, pitch_scale: float = 1.0) -> AudioStreamPlayer2D:
+	if _sfx_pool == null:
+		return null
+	return _sfx_pool.play_at(stream, position, SfxPool.Priority.IMPACT, volume_db, pitch_scale)
+
+
+## Play an ambience sound at position (lowest priority).
+func play_ambience_sfx(stream: AudioStream, position: Vector2,
+					   volume_db: float = 0.0, pitch_scale: float = 1.0) -> AudioStreamPlayer2D:
+	if _sfx_pool == null:
+		return null
+	return _sfx_pool.play_at(stream, position, SfxPool.Priority.AMBIENCE, volume_db, pitch_scale)
+
+
+## Play a sound with explicit priority.
+func play_sfx(stream: AudioStream, position: Vector2, priority: SfxPool.Priority,
+			  volume_db: float = 0.0, pitch_scale: float = 1.0) -> AudioStreamPlayer2D:
+	if _sfx_pool == null:
+		return null
+	return _sfx_pool.play_at(stream, position, priority, volume_db, pitch_scale)
+
+
+## Get the SFX pool for direct access if needed.
+func get_sfx_pool() -> SfxPool:
+	return _sfx_pool
+
+#endregion
+
+
 #region Polyphony Management
 
-## Check if we can play another SFX voice.
+## Check if we can play another SFX voice (pool has available slots).
 func can_play_sfx() -> bool:
-	return _active_sfx_count < MAX_SFX_VOICES
+	if _sfx_pool == null:
+		return false
+	return _sfx_pool.get_available_count() > 0
 
 
 ## Check if we can play another music voice.
@@ -144,16 +196,6 @@ func can_play_music() -> bool:
 ## Check if we can play another ambience voice.
 func can_play_ambience() -> bool:
 	return _active_ambience_count < MAX_AMBIENCE_VOICES
-
-
-## Register that an SFX voice started playing.
-func register_sfx_voice() -> void:
-	_active_sfx_count += 1
-
-
-## Register that an SFX voice stopped playing.
-func unregister_sfx_voice() -> void:
-	_active_sfx_count = maxi(_active_sfx_count - 1, 0)
 
 
 ## Register that a music voice started playing.
@@ -176,9 +218,11 @@ func unregister_ambience_voice() -> void:
 	_active_ambience_count = maxi(_active_ambience_count - 1, 0)
 
 
-## Get current SFX voice count.
+## Get current SFX voice count (from pool).
 func get_active_sfx_count() -> int:
-	return _active_sfx_count
+	if _sfx_pool == null:
+		return 0
+	return _sfx_pool.get_active_count()
 
 
 ## Get current music voice count.
