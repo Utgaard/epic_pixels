@@ -80,17 +80,17 @@ Complete the core game loop with win/lose conditions, introduce tanks for scale 
 
 ## Phase 1: Audio System
 
-### [ ] 1. Create AudioManager singleton
+### [x] 1. Create AudioManager singleton
 - Bus layout: Master → SFX, Music, Ambience
 - Volume controls per bus
 - Polyphony limits to prevent audio saturation
 
-### [ ] 2. Implement SFX pooling system
+### [x] 2. Implement SFX pooling system
 - Pre-instantiate AudioStreamPlayer pools
 - Acquire/release pattern for concurrent sounds
 - Priority system (weapons > impacts > ambience)
 
-### [ ] 3. Add rifle fire sounds
+### [x] 3. Add rifle fire sounds
 - Multiple sound variations (3-5) for variety
 - Randomized pitch shifting (±5-10%)
 - Positional audio based on unit location
