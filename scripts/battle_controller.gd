@@ -9,6 +9,7 @@ signal battle_ended(winning_team: int)
 const InfantryScene = preload("res://scenes/units/infantry.tscn")
 const CombatEventBusScript = preload("res://scripts/combat_event_bus.gd")
 const FXManagerScript = preload("res://scripts/fx/fx_manager.gd")
+const AudioManagerScript = preload("res://scripts/audio/audio_manager.gd")
 
 @export var units_node_path: NodePath
 @export var projectiles_node_path: NodePath
@@ -18,6 +19,7 @@ var projectiles_node: Node2D
 
 var combat_events: Node = null
 var fx_manager: Node = null
+var audio_manager: Node = null
 
 var _battle_active: bool = false
 var _units_team_a: Array = []
@@ -39,9 +41,20 @@ func _ready() -> void:
 	fx_manager.name = "FXManager"
 	add_child(fx_manager)
 
+	# Create the audio manager
+	audio_manager = AudioManagerScript.new()
+	audio_manager.name = "AudioManager"
+	add_child(audio_manager)
+
 	# Wire FX to combat events (defer to ensure FX container is found)
 	fx_manager.ready.connect(
 		func(): fx_manager.connect_to_combat_events(combat_events),
+		CONNECT_ONE_SHOT
+	)
+
+	# Wire audio to combat events
+	audio_manager.ready.connect(
+		func(): audio_manager.connect_to_combat_events(combat_events),
 		CONNECT_ONE_SHOT
 	)
 
