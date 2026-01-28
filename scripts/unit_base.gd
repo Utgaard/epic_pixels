@@ -200,6 +200,9 @@ func _on_state_enter(state: State) -> void:
 			_play_animation("shoot")
 		State.DYING:
 			_play_animation("die")
+			# Shift sprite down so death animation body rests on ground
+			if sprite:
+				sprite.position.y = -8.0
 			if movement_component:
 				movement_component.halt()  # Immediate stop
 			# Disable targeting while dying
