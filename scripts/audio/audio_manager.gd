@@ -5,6 +5,10 @@ extends Node
 ## Manages SFX, music, and ambience with volume controls and polyphony limits.
 
 const SfxPoolScript = preload("res://scripts/audio/sfx_pool.gd")
+const SoundBank = preload("res://scripts/audio/sound_bank.gd")
+
+# Sound bank paths
+const RIFLE_FIRE_BANK_PATH := "res://assets/audio/sfx/weapons/rifle_fire.tres"
 
 # Bus names (must match default_bus_layout.tres)
 const BUS_MASTER := "Master"
@@ -25,6 +29,9 @@ var _bus_ambience_idx: int = 3
 
 # SFX Pool for efficient sound playback
 var _sfx_pool: SfxPool = null
+
+# Sound banks for combat sounds
+var _rifle_fire_bank: Resource = null
 
 # Active voice counts for music/ambience (SFX uses pool)
 var _active_music_count: int = 0
@@ -54,6 +61,18 @@ func _ready() -> void:
 	_sfx_pool.name = "SfxPool"
 	add_child(_sfx_pool)
 
+	# Load sound banks
+	_load_sound_banks()
+
+
+## Load all sound banks from resources.
+func _load_sound_banks() -> void:
+	# Load rifle fire sounds
+	if ResourceLoader.exists(RIFLE_FIRE_BANK_PATH):
+		_rifle_fire_bank = load(RIFLE_FIRE_BANK_PATH)
+	else:
+		push_warning("[AudioManager] Rifle fire sound bank not found at: %s" % RIFLE_FIRE_BANK_PATH)
+
 
 ## Connect to a CombatEventBus to auto-play sounds for combat events.
 func connect_to_combat_events(events: Node) -> void:
@@ -63,9 +82,9 @@ func connect_to_combat_events(events: Node) -> void:
 	events.unit_died.connect(_on_unit_died)
 
 
-func _on_weapon_fired(_from_pos: Vector2, _to_pos: Vector2, _shooter: Node2D) -> void:
-	# Placeholder for rifle fire sounds (Task 3)
-	pass
+func _on_weapon_fired(from_pos: Vector2, _to_pos: Vector2, _shooter: Node2D) -> void:
+	# Play rifle fire sound with variation
+	_play_sound_bank(_rifle_fire_bank, from_pos, SfxPool.Priority.WEAPON)
 
 
 func _on_target_hit(_target: Node2D, _damage: float, _hit_pos: Vector2) -> void:
@@ -76,6 +95,23 @@ func _on_target_hit(_target: Node2D, _damage: float, _hit_pos: Vector2) -> void:
 func _on_unit_died(_unit: Node2D, _death_pos: Vector2) -> void:
 	# Placeholder for death sounds (Task 5)
 	pass
+
+
+## Play a random sound from a SoundBank at the given position.
+func _play_sound_bank(bank: Resource, position: Vector2, priority: SfxPool.Priority) -> AudioStreamPlayer2D:
+	if bank == null or not bank.has_method("has_sounds"):
+		return null
+	if not bank.has_sounds():
+		return null
+
+	var stream: AudioStream = bank.get_random_stream()
+	if stream == null:
+		return null
+
+	var volume_db: float = bank.volume_db if "volume_db" in bank else 0.0
+	var pitch: float = bank.get_random_pitch() if bank.has_method("get_random_pitch") else 1.0
+
+	return _sfx_pool.play_at(stream, position, priority, volume_db, pitch)
 
 
 #region Volume Controls
