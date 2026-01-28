@@ -1,20 +1,17 @@
 [gd_scene load_steps=10 format=3 uid="uid://battlefield"]
 
-[ext_resource type="Script" path="res://scripts/battlefield.gd" id="0_battlefield"]
-[ext_resource type="Script" path="res://scripts/battle_controller.gd" id="1_battle"]
-[ext_resource type="Script" path="res://scripts/camera_rig.gd" id="2_camera"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/sky.png" id="3_sky"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/far-clouds.png" id="4_far_clouds"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/far-mountains.png" id="5_far_mountains"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/near-clouds.png" id="6_near_clouds"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/mountains.png" id="7_mountains"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/mountain_dusk/trees.png" id="8_trees"]
+[ext_resource type="Script" uid="uid://cdwppvx5vls0h" path="res://scripts/battlefield.gd" id="0_battlefield"]
+[ext_resource type="Script" uid="uid://bhbjaoayefth0" path="res://scripts/battle_controller.gd" id="1_battle"]
+[ext_resource type="Script" uid="uid://clh8f6y5uceb0" path="res://scripts/camera_rig.gd" id="2_camera"]
+[ext_resource type="Texture2D" uid="uid://cro04e0owheay" path="res://assets/backgrounds/mountain_dusk/sky.png" id="3_sky"]
+[ext_resource type="Texture2D" uid="uid://bmk4gxc56j4cj" path="res://assets/backgrounds/mountain_dusk/far-clouds.png" id="4_far_clouds"]
+[ext_resource type="Texture2D" uid="uid://fcffsgk2sq1s" path="res://assets/backgrounds/mountain_dusk/far-mountains.png" id="5_far_mountains"]
+[ext_resource type="Texture2D" uid="uid://dqff3ikmsqvdq" path="res://assets/backgrounds/mountain_dusk/near-clouds.png" id="6_near_clouds"]
+[ext_resource type="Texture2D" uid="uid://ct18pu44faq5y" path="res://assets/backgrounds/mountain_dusk/mountains.png" id="7_mountains"]
+[ext_resource type="Texture2D" uid="uid://dmfbyg8rswcks" path="res://assets/backgrounds/mountain_dusk/trees.png" id="8_trees"]
 
 [node name="Battlefield" type="Node2D"]
 script = ExtResource("0_battlefield")
-team_a_infantry_count = 1
-team_b_infantry_count = 1
-start_delay = 0.5
 
 [node name="Background" type="ParallaxBackground" parent="."]
 
@@ -125,7 +122,6 @@ texture = ExtResource("8_trees")
 [node name="Terrain" type="Node2D" parent="."]
 
 [node name="Ground" type="ColorRect" parent="Terrain"]
-offset_left = 0.0
 offset_top = 300.0
 offset_right = 640.0
 offset_bottom = 360.0
@@ -147,12 +143,9 @@ color = Color(0.12, 0.1, 0.15, 1)
 
 [node name="CameraRig" type="Node2D" parent="."]
 script = ExtResource("2_camera")
-max_shake_offset = 8.0
-trauma_decay_rate = 2.0
 
 [node name="Camera2D" type="Camera2D" parent="CameraRig"]
 offset = Vector2(320, 180)
-position_smoothing_enabled = false
 
 [node name="BattleController" type="Node" parent="."]
 script = ExtResource("1_battle")
