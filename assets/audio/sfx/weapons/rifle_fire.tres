@@ -1,11 +1,10 @@
 [gd_resource type="Resource" script_class="SoundBank" load_steps=3 format=3 uid="uid://s52kf36gjngn"]
 
 [ext_resource type="Script" uid="uid://docueyvls6jee" path="res://scripts/audio/sound_bank.gd" id="1_sound_bank"]
-
-[sub_resource type="AudioStreamMP3" id="AudioStreamMP3_klava"]
+[ext_resource type="AudioStreamMP3" path="res://assets/audio/sfx/weapons/weapon_assaultrifle.mp3" id="2_rifle"]
 
 [resource]
 script = ExtResource("1_sound_bank")
-streams = Array[AudioStream]([SubResource("AudioStreamMP3_klava")])
+streams = Array[AudioStream]([ExtResource("2_rifle")])
 pitch_min = 0.9
 pitch_max = 1.1

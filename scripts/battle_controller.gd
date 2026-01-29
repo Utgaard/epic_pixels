@@ -46,17 +46,9 @@ func _ready() -> void:
 	audio_manager.name = "AudioManager"
 	add_child(audio_manager)
 
-	# Wire FX to combat events (defer to ensure FX container is found)
-	fx_manager.ready.connect(
-		func(): fx_manager.connect_to_combat_events(combat_events),
-		CONNECT_ONE_SHOT
-	)
-
-	# Wire audio to combat events
-	audio_manager.ready.connect(
-		func(): audio_manager.connect_to_combat_events(combat_events),
-		CONNECT_ONE_SHOT
-	)
+	# Wire FX and audio to combat events (_ready has already run after add_child)
+	fx_manager.connect_to_combat_events(combat_events)
+	audio_manager.connect_to_combat_events(combat_events)
 
 
 func start_battle() -> void:
@@ -99,9 +91,8 @@ func spawn_infantry(team: int) -> UnitBase:
 	# Track unit
 	_track_unit(unit, team)
 
-	# Register with combat event bus
-	# Defer to ensure components are set up
-	unit.ready.connect(func(): combat_events.register_unit(unit), CONNECT_ONE_SHOT)
+	# Register with combat event bus (unit's _ready has already run after add_child)
+	combat_events.register_unit(unit)
 
 	print("[BattleController] Spawned %s at %s" % [unit.name, unit.position])
 	return unit
