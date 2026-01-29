@@ -49,4 +49,4 @@ script = ExtResource("6_weapon")
 damage = 12.0
 fire_rate = 1.5
 range = 280.0
-muzzle_offset = Vector2(16, -12)
+muzzle_offset = Vector2(17, -17)

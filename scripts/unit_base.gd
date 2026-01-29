@@ -137,6 +137,7 @@ func _process_attacking(_delta: float) -> void:
 
 	# Fire weapon when ready
 	if weapon_component and weapon_component.can_fire():
+		_play_animation("shoot")
 		weapon_component.fire(current_target)
 
 
@@ -197,7 +198,7 @@ func _on_state_enter(state: State) -> void:
 		State.ADVANCING:
 			_play_animation("run_gun")
 		State.ATTACKING:
-			_play_animation("shoot")
+			_play_animation("idle_gun")
 		State.DYING:
 			_play_animation("die")
 			if movement_component:
@@ -217,6 +218,9 @@ func _play_animation(anim_name: String) -> void:
 func _on_animation_finished() -> void:
 	if current_state == State.DYING:
 		change_state(State.DEAD)
+	elif current_state == State.ATTACKING:
+		# Return to idle stance after shoot animation
+		_play_animation("idle_gun")
 
 
 func _on_health_depleted() -> void:

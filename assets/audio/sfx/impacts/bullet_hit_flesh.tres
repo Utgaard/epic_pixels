@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SoundBank" load_steps=5 format=3 uid="uid://bfr0mx3qda4t3"]
+
+[ext_resource type="Script" uid="uid://docueyvls6jee" path="res://scripts/audio/sound_bank.gd" id="1_sound_bank"]
+[ext_resource type="AudioStream" uid="uid://cr6piwmtmtff6" path="res://assets/audio/sfx/impacts/Person_pain1.wav" id="2_fkfmu"]
+[ext_resource type="AudioStream" uid="uid://ci343mgcl8mbo" path="res://assets/audio/sfx/impacts/Person_pain2.wav" id="3_8klo2"]
+[ext_resource type="AudioStream" uid="uid://dnohmwhcw2qm0" path="res://assets/audio/sfx/impacts/Person_pain3.wav" id="4_ddev0"]
+
+[resource]
+script = ExtResource("1_sound_bank")
+streams = Array[AudioStream]([ExtResource("2_fkfmu"), ExtResource("3_8klo2"), ExtResource("4_ddev0")])
+volume_db = 6.0
+pitch_min = 0.9
+pitch_max = 1.1

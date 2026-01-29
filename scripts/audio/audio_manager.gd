@@ -9,6 +9,8 @@ const SoundBank = preload("res://scripts/audio/sound_bank.gd")
 
 # Sound bank paths
 const RIFLE_FIRE_BANK_PATH := "res://assets/audio/sfx/weapons/rifle_fire.tres"
+const BULLET_HIT_FLESH_BANK_PATH := "res://assets/audio/sfx/impacts/bullet_hit_flesh.tres"
+const BULLET_HIT_METAL_BANK_PATH := "res://assets/audio/sfx/impacts/bullet_hit_metal.tres"
 
 # Bus names (must match default_bus_layout.tres)
 const BUS_MASTER := "Master"
@@ -32,6 +34,8 @@ var _sfx_pool: SfxPool = null
 
 # Sound banks for combat sounds
 var _rifle_fire_bank: Resource = null
+var _bullet_hit_flesh_bank: Resource = null
+var _bullet_hit_metal_bank: Resource = null
 
 # Active voice counts for music/ambience (SFX uses pool)
 var _active_music_count: int = 0
@@ -73,6 +77,12 @@ func _load_sound_banks() -> void:
 	else:
 		push_warning("[AudioManager] Rifle fire sound bank not found at: %s" % RIFLE_FIRE_BANK_PATH)
 
+	# Load bullet impact sounds
+	if ResourceLoader.exists(BULLET_HIT_FLESH_BANK_PATH):
+		_bullet_hit_flesh_bank = load(BULLET_HIT_FLESH_BANK_PATH)
+	if ResourceLoader.exists(BULLET_HIT_METAL_BANK_PATH):
+		_bullet_hit_metal_bank = load(BULLET_HIT_METAL_BANK_PATH)
+
 
 ## Connect to a CombatEventBus to auto-play sounds for combat events.
 func connect_to_combat_events(events: Node) -> void:
@@ -87,9 +97,23 @@ func _on_weapon_fired(from_pos: Vector2, _to_pos: Vector2, _shooter: Node2D) -> 
 	_play_sound_bank(_rifle_fire_bank, from_pos, SfxPool.Priority.WEAPON)
 
 
-func _on_target_hit(_target: Node2D, _damage: float, _hit_pos: Vector2) -> void:
-	# Placeholder for bullet impact sounds (Task 4)
-	pass
+func _on_target_hit(target: Node2D, _damage: float, hit_pos: Vector2) -> void:
+	# Determine impact type based on target (default to flesh for infantry)
+	var is_armored := _is_armored_target(target)
+	var bank: Resource = _bullet_hit_metal_bank if is_armored else _bullet_hit_flesh_bank
+	_play_sound_bank(bank, hit_pos, SfxPool.Priority.IMPACT)
+
+
+## Check if target is an armored unit (tank, vehicle, etc.)
+func _is_armored_target(target: Node2D) -> bool:
+	# Check for armor_type property on target (for future tank support)
+	if "armor_type" in target:
+		return target.armor_type == "metal" or target.armor_type == "armored"
+	# Check node name as fallback
+	if target.name.begins_with("Tank"):
+		return true
+	# Default: infantry is not armored
+	return false
 
 
 func _on_unit_died(_unit: Node2D, _death_pos: Vector2) -> void:

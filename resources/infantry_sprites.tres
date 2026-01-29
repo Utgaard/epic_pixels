@@ -84,7 +84,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("shoot2")
 }],
-"loop": true,
+"loop": false,
 "name": &"shoot",
 "speed": 15.0
 }, {

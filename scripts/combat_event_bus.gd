@@ -19,7 +19,6 @@ func register_unit(unit: Node2D) -> void:
 
 	# Connect weapon signals
 	var weapon = unit.get("weapon_component")
-	print("[CombatEventBus] Registering unit %s, weapon_component: %s" % [unit.name, weapon])
 	if weapon:
 		weapon.fired.connect(
 			func(from_pos: Vector2, to_pos: Vector2):

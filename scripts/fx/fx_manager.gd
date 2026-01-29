@@ -17,8 +17,6 @@ func _ready() -> void:
 		_fx_container = root.get_node_or_null("RenderRoot/FX")
 		if not _fx_container:
 			push_warning("[FXManager] Could not find RenderRoot/FX container")
-		else:
-			print("[FXManager] Found FX container: %s" % _fx_container.get_path())
 
 
 ## Connect to a CombatEventBus to auto-spawn FX.
@@ -29,9 +27,7 @@ func connect_to_combat_events(events: Node) -> void:
 	events.unit_died.connect(_on_unit_died)
 
 
-func _on_weapon_fired(from_pos: Vector2, to_pos: Vector2, shooter: Node2D) -> void:
-	print("[FXManager] Weapon fired from %s to %s by %s" % [from_pos, to_pos, shooter.name if shooter else "null"])
-	spawn_muzzle_flash(from_pos, shooter)
+func _on_weapon_fired(from_pos: Vector2, to_pos: Vector2, _shooter: Node2D) -> void:
 	spawn_tracer(from_pos, to_pos)
 
 
